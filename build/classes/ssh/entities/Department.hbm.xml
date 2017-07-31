@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="ssh.entities">
+	<class name="ssh.entities.Department" table="SSH_DEPARTMENT">
+		<id name="id" type="java.lang.Integer">
+			<column name="ID"/>
+			<!-- 对于MySQL而言，native方式是Increment方式 -->
+			<generator class="native"/>
+		</id>
+		
+		<property name="departmentName" type="java.lang.String">
+			<column name="DEPARTMENT_NAME"/>
+		</property>
+	</class>
+</hibernate-mapping>

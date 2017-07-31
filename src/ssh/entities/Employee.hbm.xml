@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="ssh.entities">
+	<class name="ssh.entities.Employee" table="SSH_EMPLOYEE">
+		<id name="id" type="java.lang.Integer">
+			<column name="ID"/>
+			<generator class="native"/>
+		</id>
+		
+		<property name="lastName" type="java.lang.String">
+			<column name="LAST_NAME"/>
+		</property>
+		
+		<property name="email" type="java.lang.String">
+			<column name="EMAIL"/>
+		</property>
+		
+		<property name="birth" type="java.util.Date">
+			<column name="BIRTH"/>
+		</property>
+		
+		<property name="createTime" type="java.util.Date">
+			<column name="CREATE_TIME"/>
+		</property>
+		
+		<!-- 映射单向n-1的关系。注意默认使用的是懒加载方式。可以通过显示的使用lazy属性lazy="false"来改变加载方式 -->
+		<many-to-one name="department" class="ssh.entities.Department" >
+			<column name="DEPARTMENT_ID"/>
+		</many-to-one>
+	</class>
+</hibernate-mapping>

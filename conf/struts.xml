@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC 
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+
+	<!-- Struts2的基本配置包括两个constant和一个package标签。 -->
+	<constant name="struts.enable.DynamicMethodInvocation" value="false"/>
+	<constant name="struts.devMode" value="true"/>
+	
+	<!-- 注意：package标签对它里面的标签顺序是有要求的，如果标签顺序不对，会报错。 -->
+	<package name="default" namespace="/" extends="struts-default">  
+				
+		<!-- 定义新的拦截器栈，配置prepare拦截器栈的alwaysInvokePrepare参数值为false -->
+		<interceptors>
+			<interceptor-stack name="sshStack">  <!-- 新的拦截器栈名 -->
+				<interceptor-ref name="paramsPrepareParamsStack">
+					<param name="prepare.alwaysInvokePrepare">false</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		
+		<!-- 使用新的拦截器栈 -->
+		<default-interceptor-ref name="sshStack"></default-interceptor-ref>
+		
+		<!-- 这里action的name表示要拦截的操作请求，本项目中要实现对employee的增删改查，所以使用了通配符“*”。method标签也使用通配符“{1}"，表示方法名与第一通配符所匹配的内容相同。 -->
+		<action name="emp-*" class="ssh.actions.EmployeeAction"
+			method="{1}">
+			<result name="list">/WEB-INF/views/emp-list.jsp</result>
+			<result name="deleteSuccess" type="redirect">/emp-list</result>  <!-- 不使用Ajax方式直接删除时采用重定向来实现自动刷新。不能直接重定向到emp-list.jsp，因为页面是没有显示数据的能力的，而是页面所对应的action在负责数据的处理然后把数据放到页面中。-->
+			
+			<!-- 使用AJAX方式删除时的result标签设置，其中只有name属性值是自己设定的，其他的值都是Struts的文档中提供的，也是固定的。这里的name属性与对应Action类中的具体方法的返回值对应。
+				 由于这里使用的Ajax，而不是重定向，所以必须在jsp中配合JavaScript脚本根据Ajax从服务器获得标志量来实现页面的自动刷新。这里虽然在编程上较直接删除复杂，但是效率比直接删除高。 -->
+			<result name="deleteAjax" type="stream" >
+				<!-- 这里能设置哪些参数，使用result的type值决定的。查看方式是在struts包中struts-default.xml->result-type->stream，然后打开stream属性对应的类StreamResult中查看。 -->
+				<param name="contentType" >text/html</param>
+				<param name="inputName">inputStream</param>  //<!-- 这里的inputStream与对应Action类中的InputStream字段名相同。 -->
+			</result>
+			
+			<result name="addEmp">/WEB-INF/views/emp-add.jsp</result>
+			<result name="input" type="redirect">/emp-addEmp</result>  <!-- 这个input结果是必须的，一旦页面出现错误，struts将自动调用这个结果页面。 -->
+			<result name="saveSuccess" type="redirect">/emp-list</result>
+			<result name="lastNameValid" type="stream">  <!-- 这里可以与delete的返回结果使用同一个配置，因为它们都是Ajax的返回。 -->
+				<param name="contentType">text/html</param>
+				<param name="inputName">inputStream</param>
+			</result>
+		</action>
+	</package>
+</struts>
